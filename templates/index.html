@@ -1,877 +1,973 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Epileptic Seizure Detection System</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background-size: 400% 400%;
+        animation: gradientShift 12s ease infinite;
+        min-height: 100vh;
+        padding: 20px;
+        color: #333;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* Floating particles background */
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(76, 175, 80, 0.3);
+        border-radius: 50%;
+        animation: float 10s infinite ease-in-out;
+      }
+
+      .particle:nth-child(odd) {
+        background: rgba(46, 125, 50, 0.3);
+        animation-duration: 14s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        backdrop-filter: blur(15px);
+        animation: fadeInUp 0.8s ease-out;
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+      }
+
+      .header {
+        background: linear-gradient(
+          135deg,
+          #4caf50 0%,
+          #2e7d32 50%,
+          #1b5e20 100%
+        );
+        color: white;
+        padding: 50px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .header::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent 30%,
+          rgba(255, 255, 255, 0.1) 50%,
+          transparent 70%
+        );
+        animation: shine 4s infinite;
+      }
+
+      @keyframes shine {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .header h1 {
+        font-size: clamp(2rem, 5vw, 2.8rem);
+        margin-bottom: 15px;
+        font-weight: 700;
+        animation: slideInFromTop 1s ease-out 0.3s both;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header .subtitle {
+        font-size: clamp(1rem, 2.5vw, 1.2rem);
+        opacity: 0;
+        margin-bottom: 20px;
+        animation: slideInFromTop 1s ease-out 0.5s both;
+      }
+
+      @keyframes slideInFromTop {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .medical-icon {
+        font-size: 3.5rem;
+        margin-bottom: 25px;
+        color: #81c784;
+        animation: brainWave 3s ease-in-out infinite;
+        transition: all 0.3s ease;
+        opacity: 0;
+        animation: slideInFromTop 1s ease-out 0.1s both,
+          brainWave 3s ease-in-out 1.5s infinite;
+      }
+
+      .medical-icon:hover {
+        animation-duration: 1.5s;
+        cursor: pointer;
+        transform: scale(1.1);
+      }
+
+      .main-content {
+        padding: 60px 40px;
+      }
+
+      .info-section {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        border-left: 5px solid #4caf50;
+        padding: 30px;
+        margin-bottom: 40px;
+        border-radius: 15px;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .info-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(76, 175, 80, 0.1),
+          transparent
+        );
+        transition: left 0.6s;
+      }
+
+      .info-section:hover::before {
+        left: 100%;
+      }
+
+      .info-section:hover {
+        transform: translateX(10px) translateY(-3px);
+        border-left-width: 8px;
+        box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
+      }
+
+      .info-section h3 {
+        color: #2e7d32;
+        margin-bottom: 18px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .info-section p {
+        color: #4a5568;
+        line-height: 1.7;
+        margin-bottom: 12px;
+        font-size: 1.05rem;
+      }
+
+      .requirements {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border: 2px solid #ffb74d;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 40px;
+        animation: fadeInUp 0.8s ease-out 0.8s both;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 25px rgba(255, 183, 77, 0.15);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .requirements::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(135deg, #ffb74d, #ff9800);
+        transform: scaleX(0);
+        transition: transform 0.6s;
+      }
+
+      .requirements:hover::before {
+        transform: scaleX(1);
+      }
+
+      .requirements:hover {
+        transform: scale(1.02) translateY(-3px);
+        box-shadow: 0 15px 40px rgba(255, 183, 77, 0.25);
+        border-color: #ff9800;
+      }
+
+      .requirements h4 {
+        color: #ef6c00;
+        margin-bottom: 18px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.2rem;
+      }
+
+      .requirements ul {
+        color: #6d4c41;
+        padding-left: 25px;
+      }
+
+      .requirements li {
+        margin-bottom: 10px;
+        line-height: 1.5;
+        transition: color 0.2s ease;
+      }
+
+      .requirements li:hover {
+        color: #4e342e;
+        transform: translateX(5px);
+      }
+
+      .upload-section {
+        background: rgba(255, 255, 255, 0.9);
+        border: 3px dashed #a5d6a7;
+        border-radius: 20px;
+        padding: 50px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.8s ease-out 1s both;
+        backdrop-filter: blur(10px);
+      }
+
+      .upload-section::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(76, 175, 80, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        transition: all 0.4s ease;
+        opacity: 0;
+      }
+
+      .upload-section:hover {
+        border-color: #4caf50;
+        background: rgba(248, 251, 248, 0.95);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(76, 175, 80, 0.2);
+        border-width: 4px;
+      }
+
+      .upload-section:hover::before {
+        animation: shimmer 1.2s ease infinite;
+        opacity: 1;
+      }
+
+      .upload-section.dragover {
+        border-color: #2e7d32;
+        background: rgba(232, 245, 233, 0.95);
+        transform: scale(1.03);
+        animation: pulse 1.5s ease infinite;
+        border-width: 4px;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+      }
+
+      .upload-btn {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        padding: 18px 35px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+        font-weight: 600;
+      }
+
+      .upload-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.6s ease;
+      }
+
+      .upload-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+      }
+
+      .upload-btn:hover::before {
+        left: 100%;
+      }
+
+      .upload-btn:active {
+        transform: translateY(-1px) scale(1.02);
+      }
+
+      .upload-text {
+        margin: 25px 0;
+        color: #4a5568;
+        font-size: 1.05rem;
+        opacity: 0.8;
+      }
+
+      .selected-file {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border: 2px solid #66bb6a;
+        padding: 20px;
+        border-radius: 15px;
+        margin-top: 25px;
+        display: none;
+        animation: fadeInUp 0.4s ease;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 25px rgba(102, 187, 106, 0.2);
+      }
+
+      .selected-file.show {
+        display: block;
+        animation: fadeInUp 0.4s ease;
+      }
+
+      .selected-file:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(102, 187, 106, 0.3);
+      }
+
+      .submit-btn {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        padding: 18px 45px;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        margin-top: 40px;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        position: relative;
+        overflow: hidden;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .submit-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.6s ease;
+      }
+
+      .submit-btn:hover:not(:disabled) {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+      }
+
+      .submit-btn:hover:not(:disabled)::before {
+        left: 100%;
+      }
+
+      .submit-btn:disabled {
+        background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 4px 15px rgba(189, 189, 189, 0.3);
+        animation: none;
+      }
+
+      .result-section {
+        margin-top: 50px;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 600;
+        display: none;
+        animation: slideIn 0.6s ease, pulse 3s ease infinite;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      }
+
+      .result-section.show {
+        display: block;
+      }
+
+      .result-section:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      }
+
+      .result-positive {
+        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        border: 3px solid #ef5350;
+        color: #c62828;
+      }
+
+      .result-negative {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border: 3px solid #66bb6a;
+        color: #2e7d32;
+      }
+
+      .result-error {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border: 3px solid #ffb74d;
+        color: #ef6c00;
+      }
+
+      .footer {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        text-align: center;
+        padding: 40px 30px;
+        animation: fadeInUp 0.8s ease-out 1.4s both;
+        position: relative;
+      }
+
+      .footer::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #4caf50, transparent);
+      }
+
+      .footer .fa-heartbeat {
+        animation: heartbeat 2s ease infinite;
+        color: #81c784;
+        margin: 0 8px;
+      }
+
+      .footer p {
+        margin-bottom: 12px;
+        font-size: 1.05rem;
+      }
+
+      .disclaimer {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border: 2px solid #ffb74d;
+        border-radius: 15px;
+        padding: 25px;
+        margin-top: 40px;
+        animation: fadeInUp 0.8s ease-out 1.2s both;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 8px 25px rgba(255, 183, 77, 0.15);
+        border-left: 6px solid #ff9800;
+      }
+
+      .disclaimer:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 15px 40px rgba(255, 183, 77, 0.25);
+      }
+
+      .disclaimer h4 {
+        color: #ef6c00;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.2rem;
+      }
+
+      .disclaimer p {
+        color: #6d4c41;
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        margin: 30px 0;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 5px solid rgba(76, 175, 80, 0.2);
+        border-top: 5px solid #4caf50;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 25px;
+      }
+
+      .loading-text {
+        font-size: 1.1rem;
+        color: #2e7d32;
+        font-weight: 600;
+        animation: typing 2s steps(40, end) infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.02);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.2);
+        }
+        50% {
+          transform: scale(1);
+        }
+        75% {
+          transform: scale(1.1);
+        }
+      }
+
+      @keyframes brainWave {
+        0%,
+        100% {
+          transform: rotateY(0deg) scale(1);
+          color: #81c784;
+        }
+        25% {
+          transform: rotateY(90deg) scale(1.1);
+          color: #4caf50;
+        }
+        50% {
+          transform: rotateY(180deg) scale(1.2);
+          color: #2e7d32;
+        }
+        75% {
+          transform: rotateY(270deg) scale(1.1);
+          color: #66bb6a;
+        }
+      }
+
+      @keyframes typing {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0.5;
+        }
+      }
+
+      @media (max-width: 768px) {
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 12s ease infinite;
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Floating particles background */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(76, 175, 80, 0.3);
-            border-radius: 50%;
-            animation: float 10s infinite ease-in-out;
-        }
-
-        .particle:nth-child(odd) {
-            background: rgba(46, 125, 50, 0.3);
-            animation-duration: 14s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+          padding: 10px;
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            backdrop-filter: blur(15px);
-            animation: fadeInUp 0.8s ease-out;
-            transition: transform 0.3s ease;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+          margin: 5px;
+          border-radius: 20px;
         }
 
         .header {
-            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 50%, #1B5E20 100%);
-            color: white;
-            padding: 50px 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-            animation: shine 4s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
+          padding: 40px 20px;
         }
 
         .header h1 {
-            font-size: clamp(2rem, 5vw, 2.8rem);
-            margin-bottom: 15px;
-            font-weight: 700;
-            animation: slideInFromTop 1s ease-out 0.3s both;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header .subtitle {
-            font-size: clamp(1rem, 2.5vw, 1.2rem);
-            opacity: 0;
-            margin-bottom: 20px;
-            animation: slideInFromTop 1s ease-out 0.5s both;
-        }
-
-        @keyframes slideInFromTop {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .medical-icon {
-            font-size: 3.5rem;
-            margin-bottom: 25px;
-            color: #81c784;
-            animation: brainWave 3s ease-in-out infinite;
-            transition: all 0.3s ease;
-            opacity: 0;
-            animation: slideInFromTop 1s ease-out 0.1s both, brainWave 3s ease-in-out 1.5s infinite;
-        }
-
-        .medical-icon:hover {
-            animation-duration: 1.5s;
-            cursor: pointer;
-            transform: scale(1.1);
+          font-size: 2rem;
         }
 
         .main-content {
-            padding: 60px 40px;
-        }
-
-        .info-section {
-            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
-            border-left: 5px solid #4CAF50;
-            padding: 30px;
-            margin-bottom: 40px;
-            border-radius: 15px;
-            animation: fadeInUp 0.8s ease-out 0.6s both;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .info-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
-            transition: left 0.6s;
-        }
-
-        .info-section:hover::before {
-            left: 100%;
-        }
-
-        .info-section:hover {
-            transform: translateX(10px) translateY(-3px);
-            border-left-width: 8px;
-            box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
-        }
-
-        .info-section h3 {
-            color: #2E7D32;
-            margin-bottom: 18px;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .info-section p {
-            color: #4a5568;
-            line-height: 1.7;
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-        }
-
-        .requirements {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-            border: 2px solid #ffb74d;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 40px;
-            animation: fadeInUp 0.8s ease-out 0.8s both;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(255, 183, 77, 0.15);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .requirements::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(135deg, #ffb74d, #ff9800);
-            transform: scaleX(0);
-            transition: transform 0.6s;
-        }
-
-        .requirements:hover::before {
-            transform: scaleX(1);
-        }
-
-        .requirements:hover {
-            transform: scale(1.02) translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 183, 77, 0.25);
-            border-color: #ff9800;
-        }
-
-        .requirements h4 {
-            color: #ef6c00;
-            margin-bottom: 18px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.2rem;
-        }
-
-        .requirements ul {
-            color: #6d4c41;
-            padding-left: 25px;
-        }
-
-        .requirements li {
-            margin-bottom: 10px;
-            line-height: 1.5;
-            transition: color 0.2s ease;
-        }
-
-        .requirements li:hover {
-            color: #4e342e;
-            transform: translateX(5px);
+          padding: 40px 25px;
         }
 
         .upload-section {
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px dashed #a5d6a7;
-            border-radius: 20px;
-            padding: 50px;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            animation: fadeInUp 0.8s ease-out 1s both;
-            backdrop-filter: blur(10px);
+          padding: 35px 20px;
         }
 
-        .upload-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(76, 175, 80, 0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.4s ease;
-            opacity: 0;
-        }
-
-        .upload-section:hover {
-            border-color: #4CAF50;
-            background: rgba(248, 251, 248, 0.95);
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(76, 175, 80, 0.2);
-            border-width: 4px;
-        }
-
-        .upload-section:hover::before {
-            animation: shimmer 1.2s ease infinite;
-            opacity: 1;
-        }
-
-        .upload-section.dragover {
-            border-color: #2E7D32;
-            background: rgba(232, 245, 233, 0.95);
-            transform: scale(1.03);
-            animation: pulse 1.5s ease infinite;
-            border-width: 4px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .file-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .upload-btn {
-            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-            color: white;
-            padding: 18px 35px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-            position: relative;
-            overflow: hidden;
-            font-weight: 600;
-        }
-
-        .upload-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .upload-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
-        }
-
-        .upload-btn:hover::before {
-            left: 100%;
-        }
-
-        .upload-btn:active {
-            transform: translateY(-1px) scale(1.02);
-        }
-
-        .upload-text {
-            margin: 25px 0;
-            color: #4a5568;
-            font-size: 1.05rem;
-            opacity: 0.8;
-        }
-
-        .selected-file {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border: 2px solid #66bb6a;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 25px;
-            display: none;
-            animation: fadeInUp 0.4s ease;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(102, 187, 106, 0.2);
-        }
-
-        .selected-file.show {
-            display: block;
-            animation: fadeInUp 0.4s ease;
-        }
-
-        .selected-file:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 35px rgba(102, 187, 106, 0.3);
-        }
-
-        .submit-btn {
-            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
-            color: white;
-            padding: 18px 45px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-top: 40px;
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-            position: relative;
-            overflow: hidden;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .submit-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
-        }
-
-        .submit-btn:hover:not(:disabled)::before {
-            left: 100%;
-        }
-
-        .submit-btn:disabled {
-            background: linear-gradient(135deg, #bdbdbd 0%, #9e9e9e 100%);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 4px 15px rgba(189, 189, 189, 0.3);
-            animation: none;
-        }
-
-        .result-section {
-            margin-top: 50px;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: 600;
-            display: none;
-            animation: slideIn 0.6s ease, pulse 3s ease infinite;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        .result-section.show {
-            display: block;
-        }
-
-        .result-section:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-        }
-
-        .result-positive {
-            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-            border: 3px solid #ef5350;
-            color: #c62828;
-        }
-
-        .result-negative {
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            border: 3px solid #66bb6a;
-            color: #2e7d32;
-        }
-
-        .result-error {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-            border: 3px solid #ffb74d;
-            color: #ef6c00;
-        }
-
-        .footer {
-            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-            color: white;
-            text-align: center;
-            padding: 40px 30px;
-            animation: fadeInUp 0.8s ease-out 1.4s both;
-            position: relative;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #4CAF50, transparent);
-        }
-
-        .footer .fa-heartbeat {
-            animation: heartbeat 2s ease infinite;
-            color: #81c784;
-            margin: 0 8px;
-        }
-
-        .footer p {
-            margin-bottom: 12px;
-            font-size: 1.05rem;
-        }
-
+        .info-section,
+        .requirements,
         .disclaimer {
-            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
-            border: 2px solid #ffb74d;
-            border-radius: 15px;
-            padding: 25px;
-            margin-top: 40px;
-            animation: fadeInUp 0.8s ease-out 1.2s both;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(255, 183, 77, 0.15);
-            border-left: 6px solid #ff9800;
+          padding: 20px;
+          margin-bottom: 30px;
         }
-
-        .disclaimer:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 15px 40px rgba(255, 183, 77, 0.25);
-        }
-
-        .disclaimer h4 {
-            color: #ef6c00;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.2rem;
-        }
-
-        .disclaimer p {
-            color: #6d4c41;
-            font-size: 1rem;
-            line-height: 1.6;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            margin: 30px 0;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 5px solid rgba(76, 175, 80, 0.2);
-            border-top: 5px solid #4CAF50;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-
-        .loading-text {
-            font-size: 1.1rem;
-            color: #2E7D32;
-            font-weight: 600;
-            animation: typing 2s steps(40, end) infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.02);
-            }
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            }
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-            }
-        }
-
-        @keyframes heartbeat {
-            0%, 100% {
-                transform: scale(1);
-            }
-            25% {
-                transform: scale(1.2);
-            }
-            50% {
-                transform: scale(1);
-            }
-            75% {
-                transform: scale(1.1);
-            }
-        }
-
-        @keyframes brainWave {
-            0%, 100% {
-                transform: rotateY(0deg) scale(1);
-                color: #81c784;
-            }
-            25% {
-                transform: rotateY(90deg) scale(1.1);
-                color: #4CAF50;
-            }
-            50% {
-                transform: rotateY(180deg) scale(1.2);
-                color: #2E7D32;
-            }
-            75% {
-                transform: rotateY(270deg) scale(1.1);
-                color: #66bb6a;
-            }
-        }
-
-        @keyframes typing {
-            0%, 50% {
-                opacity: 1;
-            }
-            51%, 100% {
-                opacity: 0.5;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                margin: 5px;
-                border-radius: 20px;
-            }
-            
-            .header {
-                padding: 40px 20px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .main-content {
-                padding: 40px 25px;
-            }
-            
-            .upload-section {
-                padding: 35px 20px;
-            }
-            
-            .info-section, .requirements, .disclaimer {
-                padding: 20px;
-                margin-bottom: 30px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Floating particles -->
     <div class="particles"></div>
 
     <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <div class="medical-icon">
-                    <i class="fas fa-brain"></i>
-                </div>
-                <h1>Epileptic Seizure Detection</h1>
-                <p class="subtitle">AI-Powered EEG Analysis & Prediction System</p>
+      <header class="header">
+        <div class="header-content">
+          <div class="medical-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h1>Epileptic Seizure Detection</h1>
+          <p class="subtitle">AI-Powered EEG Analysis & Prediction System</p>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div class="info-section">
+          <h3><i class="fas fa-info-circle"></i> About This System</h3>
+          <p>
+            This advanced machine learning system analyzes EEG data to detect
+            potential epileptic seizure patterns. The system uses Support Vector
+            Machine (SVM) classification with Principal Component Analysis (PCA)
+            for accurate prediction.
+          </p>
+          <p>
+            Upload your EEG data file in the specified format to receive an
+            instant analysis with detailed probability scores and medical
+            insights.
+          </p>
+        </div>
+
+        <div class="requirements">
+          <h4><i class="fas fa-exclamation-triangle"></i> File Requirements</h4>
+          <ul>
+            <li>File format: CSV (.csv) only</li>
+            <li>Dimensions: Exactly 1 row and 178 columns</li>
+            <li>Data type: Numerical EEG feature values</li>
+            <li>No headers or labels required</li>
+          </ul>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+          <div class="upload-section" id="uploadSection">
+            <div class="file-input-wrapper">
+              <input
+                type="file"
+                name="file"
+                class="file-input"
+                id="fileInput"
+                accept=".csv"
+                required
+              />
+              <button type="button" class="upload-btn">
+                <i class="fas fa-upload"></i>
+                Choose CSV File
+              </button>
             </div>
-        </header>
+            <p class="upload-text">or drag and drop your CSV file here</p>
 
-        <main class="main-content">
-            <div class="info-section">
-                <h3><i class="fas fa-info-circle"></i> About This System</h3>
-                <p>This advanced machine learning system analyzes EEG data to detect potential epileptic seizure patterns. The system uses Support Vector Machine (SVM) classification with Principal Component Analysis (PCA) for accurate prediction.</p>
-                <p>Upload your EEG data file in the specified format to receive an instant analysis with detailed probability scores and medical insights.</p>
+            <div class="selected-file" id="selectedFile">
+              <i class="fas fa-file-csv"></i>
+              <span id="fileName">No file selected</span>
             </div>
+          </div>
 
-            <div class="requirements">
-                <h4><i class="fas fa-exclamation-triangle"></i> File Requirements</h4>
-                <ul>
-                    <li>File format: CSV (.csv) only</li>
-                    <li>Dimensions: Exactly 1 row and 178 columns</li>
-                    <li>Data type: Numerical EEG feature values</li>
-                    <li>No headers or labels required</li>
-                </ul>
-            </div>
+          <center>
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+              <i class="fas fa-microscope"></i>
+              Analyze EEG Data
+            </button>
+          </center>
+        </form>
 
-            <form method="POST" enctype="multipart/form-data" id="uploadForm">
-                <div class="upload-section" id="uploadSection">
-                    <div class="file-input-wrapper">
-                        <input type="file" name="file" class="file-input" id="fileInput" accept=".csv" required>
-                        <button type="button" class="upload-btn">
-                            <i class="fas fa-upload"></i>
-                            Choose CSV File
-                        </button>
-                    </div>
-                    <p class="upload-text">or drag and drop your CSV file here</p>
-                    
-                    <div class="selected-file" id="selectedFile">
-                        <i class="fas fa-file-csv"></i>
-                        <span id="fileName">No file selected</span>
-                    </div>
-                </div>
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p class="loading-text">Analyzing EEG data... Please wait.</p>
+        </div>
 
-                <center>
-                    <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                        <i class="fas fa-microscope"></i>
-                        Analyze EEG Data
-                    </button>
-                </center>
-            </form>
-
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p class="loading-text">Analyzing EEG data... Please wait.</p>
-            </div>
-
-            {% if prediction_text %}
-            <div class="result-section show {% if '⚠️' in prediction_text %}result-positive{% elif '✅' in prediction_text %}result-negative{% else %}result-error{% endif %}" id="resultSection">
-                <div style="font-size: 2.5rem; margin-bottom: 20px;">
-                    {% if '⚠️' in prediction_text %}
-                        <i class="fas fa-exclamation-triangle"></i>
-                    {% elif '✅' in prediction_text %}
-                        <i class="fas fa-check-circle"></i>
-                    {% else %}
-                        <i class="fas fa-exclamation-circle"></i>
-                    {% endif %}
-                </div>
-                {{ prediction_text }}
-            </div>
+        {% if prediction_text %}
+        <div
+          class="result-section show {% if '⚠️' in prediction_text %}result-positive{% elif '✅' in prediction_text %}result-negative{% else %}result-error{% endif %}"
+          id="resultSection"
+        >
+          <div style="font-size: 2.5rem; margin-bottom: 20px">
+            {% if '⚠️' in prediction_text %}
+            <i class="fas fa-exclamation-triangle"></i>
+            {% elif '✅' in prediction_text %}
+            <i class="fas fa-check-circle"></i>
+            {% else %}
+            <i class="fas fa-exclamation-circle"></i>
             {% endif %}
+          </div>
+          {{ prediction_text }}
+        </div>
+        {% endif %}
 
-            <div class="disclaimer">
-                <h4><i class="fas fa-shield-alt"></i> Medical Disclaimer</h4>
-                <p><strong>Important:</strong> This tool is for research and educational purposes only. It should not be used as a substitute for professional medical diagnosis or treatment. Always consult with qualified healthcare professionals for medical advice and diagnosis. The predictions made by this system should be validated by medical experts before any clinical decision-making.</p>
-            </div>
-        </main>
+        <div class="disclaimer">
+          <h4><i class="fas fa-shield-alt"></i> Medical Disclaimer</h4>
+          <p>
+            <strong>Important:</strong> This tool is for research and
+            educational purposes only. It should not be used as a substitute for
+            professional medical diagnosis or treatment. Always consult with
+            qualified healthcare professionals for medical advice and diagnosis.
+            The predictions made by this system should be validated by medical
+            experts before any clinical decision-making.
+          </p>
+        </div>
+      </main>
 
-        <footer class="footer">
-            <p><i class="fas fa-heartbeat"></i> Advanced EEG Analysis Technology <i class="fas fa-heartbeat"></i></p>
-            <p>2025 Epileptic Seizure Detection System | Developed <strong>Vedant Kolhapure</strong></p>
-        </footer>
+      <footer class="footer">
+        <p>
+          <i class="fas fa-heartbeat"></i> Advanced EEG Analysis Technology
+          <i class="fas fa-heartbeat"></i>
+        </p>
+        <p>
+          2025 Epileptic Seizure Detection System | Developed by<strong
+            >Vedant Kolhapure</strong
+          >
+        </p>
+      </footer>
     </div>
 
     <script>
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.querySelector('.particles');
-            const particleCount = 15;
+      // Create floating particles
+      function createParticles() {
+        const particlesContainer = document.querySelector(".particles");
+        const particleCount = 15;
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 10 + 's';
-                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                particlesContainer.appendChild(particle);
-            }
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.style.left = Math.random() * 100 + "%";
+          particle.style.animationDelay = Math.random() * 10 + "s";
+          particle.style.animationDuration = Math.random() * 10 + 10 + "s";
+          particlesContainer.appendChild(particle);
         }
+      }
 
-        const fileInput = document.getElementById('fileInput');
-        const uploadSection = document.getElementById('uploadSection');
-        const selectedFile = document.getElementById('selectedFile');
-        const fileName = document.getElementById('fileName');
-        const submitBtn = document.getElementById('submitBtn');
-        const uploadForm = document.getElementById('uploadForm');
-        const loading = document.getElementById('loading');
+      const fileInput = document.getElementById("fileInput");
+      const uploadSection = document.getElementById("uploadSection");
+      const selectedFile = document.getElementById("selectedFile");
+      const fileName = document.getElementById("fileName");
+      const submitBtn = document.getElementById("submitBtn");
+      const uploadForm = document.getElementById("uploadForm");
+      const loading = document.getElementById("loading");
 
-        // File input change handler
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                fileName.textContent = file.name;
-                selectedFile.classList.add('show');
-                submitBtn.disabled = false;
-                
-                if (file.name.endsWith('.csv')) {
-                    selectedFile.style.borderColor = '#66bb6a';
-                    selectedFile.style.background = 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)';
-                } else {
-                    selectedFile.style.borderColor = '#ef5350';
-                    selectedFile.style.background = 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)';
-                }
-            }
-        });
+      // File input change handler
+      fileInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          fileName.textContent = file.name;
+          selectedFile.classList.add("show");
+          submitBtn.disabled = false;
 
-        // Drag and drop functionality
-        uploadSection.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadSection.classList.add('dragover');
-        });
+          if (file.name.endsWith(".csv")) {
+            selectedFile.style.borderColor = "#66bb6a";
+            selectedFile.style.background =
+              "linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)";
+          } else {
+            selectedFile.style.borderColor = "#ef5350";
+            selectedFile.style.background =
+              "linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)";
+          }
+        }
+      });
 
-        uploadSection.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-        });
+      // Drag and drop functionality
+      uploadSection.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        uploadSection.classList.add("dragover");
+      });
 
-        uploadSection.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadSection.classList.remove('dragover');
-            
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                fileInput.files = files;
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
-            }
-        });
+      uploadSection.addEventListener("dragleave", function (e) {
+        e.preventDefault();
+        uploadSection.classList.remove("dragover");
+      });
 
-        // Form submission with loading state
-        uploadForm.addEventListener('submit', function(e) {
-            if (fileInput.files.length > 0) {
-                loading.classList.add('show');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            }
-        });
+      uploadSection.addEventListener("drop", function (e) {
+        e.preventDefault();
+        uploadSection.classList.remove("dragover");
 
-        // Enhanced particle effects for drag and drop
-        function createUploadParticle(x, y) {
-            const particle = document.createElement('div');
-            particle.style.cssText = `
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          const event = new Event("change");
+          fileInput.dispatchEvent(event);
+        }
+      });
+
+      // Form submission with loading state
+      uploadForm.addEventListener("submit", function (e) {
+        if (fileInput.files.length > 0) {
+          loading.classList.add("show");
+          submitBtn.disabled = true;
+          submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        }
+      });
+
+      // Enhanced particle effects for drag and drop
+      function createUploadParticle(x, y) {
+        const particle = document.createElement("div");
+        particle.style.cssText = `
                 position: fixed;
                 left: ${x}px;
                 top: ${y}px;
@@ -884,9 +980,9 @@
                 animation: particleFloat 2s ease-out forwards;
                 box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
             `;
-            
-            const style = document.createElement('style');
-            style.textContent = `
+
+        const style = document.createElement("style");
+        style.textContent = `
                 @keyframes particleFloat {
                     0% {
                         opacity: 1;
@@ -898,91 +994,96 @@
                     }
                 }
             `;
-            document.head.appendChild(style);
-            document.body.appendChild(particle);
-            
-            setTimeout(() => {
-                if (document.body.contains(particle)) {
-                    document.body.removeChild(particle);
-                }
-                if (document.head.contains(style)) {
-                    document.head.removeChild(style);
-                }
-            }, 2000);
+        document.head.appendChild(style);
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+          if (document.body.contains(particle)) {
+            document.body.removeChild(particle);
+          }
+          if (document.head.contains(style)) {
+            document.head.removeChild(style);
+          }
+        }, 2000);
+      }
+
+      // Enhanced drag and drop with particle effects
+      uploadSection.addEventListener("dragenter", function (e) {
+        e.preventDefault();
+        this.classList.add("dragover");
+
+        // Create particles on drag enter
+        const rect = this.getBoundingClientRect();
+        for (let i = 0; i < 8; i++) {
+          setTimeout(() => {
+            createUploadParticle(
+              rect.left + Math.random() * rect.width,
+              rect.top + Math.random() * rect.height
+            );
+          }, i * 100);
+        }
+      });
+
+      // Click handler for upload button and section
+      document.addEventListener("click", function (e) {
+        if (
+          e.target.classList.contains("upload-btn") ||
+          (e.target === uploadSection && !e.target.closest("input, button"))
+        ) {
+          fileInput.click();
+        }
+      });
+
+      // Add staggered animations to list items
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize particles
+        createParticles();
+
+        // Stagger list animations
+        document.querySelectorAll(".requirements li").forEach((li, index) => {
+          li.style.animation = `fadeInUp 0.5s ease-out ${
+            1.2 + index * 0.15
+          }s both`;
+          li.style.opacity = "0";
+        });
+
+        // Add hover effect to result icons
+        const resultIcon = document.querySelector(".result-section i");
+        if (resultIcon) {
+          resultIcon.addEventListener("mouseenter", function () {
+            this.style.animation = "brainWave 1s ease-in-out infinite";
+          });
+          resultIcon.addEventListener("mouseleave", function () {
+            this.style.animation = "";
+          });
         }
 
-        // Enhanced drag and drop with particle effects
-        uploadSection.addEventListener('dragenter', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-            
-            // Create particles on drag enter
-            const rect = this.getBoundingClientRect();
-            for (let i = 0; i < 8; i++) {
-                setTimeout(() => {
-                    createUploadParticle(
-                        rect.left + Math.random() * rect.width,
-                        rect.top + Math.random() * rect.height
-                    );
-                }, i * 100);
-            }
+        // Add floating animation to various icons
+        document.querySelectorAll(".fas").forEach((icon, index) => {
+          if (!icon.closest(".result-section")) {
+            icon.style.animation = `float 3s ease-in-out infinite`;
+            icon.style.animationDelay = `${index * 0.2}s`;
+          }
+        });
+      });
+
+      // Enhanced hover effects
+      document
+        .querySelectorAll(".info-section, .requirements, .disclaimer")
+        .forEach((section) => {
+          section.addEventListener("mouseenter", function () {
+            this.style.transform = this.classList.contains("info-section")
+              ? "translateX(10px) translateY(-3px)"
+              : "scale(1.02) translateY(-3px)";
+          });
+
+          section.addEventListener("mouseleave", function () {
+            this.style.transform = "";
+          });
         });
 
-        // Click handler for upload button and section
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('upload-btn') || 
-                (e.target === uploadSection && !e.target.closest('input, button'))) {
-                fileInput.click();
-            }
-        });
-
-        // Add staggered animations to list items
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize particles
-            createParticles();
-            
-            // Stagger list animations
-            document.querySelectorAll('.requirements li').forEach((li, index) => {
-                li.style.animation = `fadeInUp 0.5s ease-out ${1.2 + (index * 0.15)}s both`;
-                li.style.opacity = '0';
-            });
-
-            // Add hover effect to result icons
-            const resultIcon = document.querySelector('.result-section i');
-            if (resultIcon) {
-                resultIcon.addEventListener('mouseenter', function() {
-                    this.style.animation = 'brainWave 1s ease-in-out infinite';
-                });
-                resultIcon.addEventListener('mouseleave', function() {
-                    this.style.animation = '';
-                });
-            }
-
-            // Add floating animation to various icons
-            document.querySelectorAll('.fas').forEach((icon, index) => {
-                if (!icon.closest('.result-section')) {
-                    icon.style.animation = `float 3s ease-in-out infinite`;
-                    icon.style.animationDelay = `${index * 0.2}s`;
-                }
-            });
-        });
-
-        // Enhanced hover effects
-        document.querySelectorAll('.info-section, .requirements, .disclaimer').forEach(section => {
-            section.addEventListener('mouseenter', function() {
-                this.style.transform = this.classList.contains('info-section') 
-                    ? 'translateX(10px) translateY(-3px)' 
-                    : 'scale(1.02) translateY(-3px)';
-            });
-            
-            section.addEventListener('mouseleave', function() {
-                this.style.transform = '';
-            });
-        });
-
-        // Smooth scroll behavior
-        document.documentElement.style.scrollBehavior = 'smooth';
+      // Smooth scroll behavior
+      document.documentElement.style.scrollBehavior = "smooth";
     </script>
-
-</body>
+  </body>
 </html>

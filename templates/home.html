@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epileptic Seizure Detection - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Floating particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            animation: float 8s infinite ease-in-out;
+        }
+
+        .particle:nth-child(odd) {
+            background: rgba(46, 125, 50, 0.3);
+            animation-duration: 12s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        header {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 50%, #1B5E20 100%);
+            padding: 60px 20px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 15px;
+            opacity: 0;
+            animation: slideInFromTop 1s ease-out 0.5s forwards;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            opacity: 0;
+            animation: slideInFromTop 1s ease-out 0.7s forwards;
+            margin-bottom: 25px;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #2E7D32;
+            font-weight: bold;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            opacity: 0;
+            animation: slideInFromTop 1s ease-out 0.9s forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(76, 175, 80, 0.2) 0%, transparent 70%);
+            transition: all 0.4s;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            color: #1B5E20;
+        }
+
+        section {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        section:nth-child(3) { animation-delay: 0.2s; }
+        section:nth-child(4) { animation-delay: 0.4s; }
+        section:nth-child(5) { animation-delay: 0.6s; }
+        section:nth-child(6) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            text-align: center;
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            position: relative;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .step {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .step:hover::before {
+            left: 100%;
+        }
+
+        .step:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .step-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255,255,255,0.3), transparent);
+            animation: rotate 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .step-icon img {
+            width: 40px;
+            filter: brightness(0) invert(1);
+            z-index: 1;
+            position: relative;
+        }
+
+        .step:hover .step-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .step h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2E7D32;
+        }
+
+        .step p {
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .metric {
+            background: rgba(255,255,255,0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            transform: scaleX(0);
+            transition: transform 0.6s;
+        }
+
+        .metric:hover::before {
+            transform: scaleX(1);
+        }
+
+        .metric:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .metric h3 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            counter-reset: number;
+            position: relative;
+        }
+
+        .metric p {
+            color: #666;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .disclaimer {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            color: #856404;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 50px auto;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(133, 100, 4, 0.1);
+            border-left: 5px solid #ffc107;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        footer {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 80px;
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4CAF50, transparent);
+        }
+
+        /* Scroll Progress Bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            transition: all 0.4s;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(50px);
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 15px;
+            }
+            
+            section {
+                margin: 50px auto;
+                padding: 0 15px;
+            }
+            
+            .steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .metric h3 {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Loading animation for metrics */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .metric.animate h3 {
+            animation: countUp 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress bar -->
+    <div class="progress-bar"></div>
+    
+    <!-- Floating particles -->
+    <div class="particles"></div>
+
+    <header>
+        <h1>Epileptic Seizure Detection</h1>
+        <p>Upload EEG data in CSV format and detect seizure risk instantly using AI</p>
+        <a href="index.html" class="btn">Go to Prediction Tool</a>
+    </header>
+
+    <section>
+        <h2>About the Project</h2>
+        <div class="about-text">
+            This project uses advanced Machine Learning techniques (Support Vector Machines with PCA preprocessing)
+            to predict whether a person is likely to experience an epileptic seizure based on EEG signal readings.
+            Our model is trained on a dataset containing 178 features and achieves outstanding accuracy with 
+            state-of-the-art performance metrics.
+        </div>
+    </section>
+
+    <section>
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon">
+                    <img src="https://img.icons8.com/ios-filled/50/upload.png" alt="Upload">
+                </div>
+                <h4>Step 1: Upload Data</h4>
+                <p>Upload a CSV file containing a single row with 178 EEG features extracted from brain signal recordings.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <img src="https://img.icons8.com/ios-filled/50/processing.png" alt="Processing">
+                </div>
+                <h4>Step 2: Data Processing</h4>
+                <p>The system applies standardization and Principal Component Analysis (PCA) transformation to optimize your data for prediction.</p>
+            </div>
+            <div class="step">
+                <div class="step-icon">
+                    <img src="https://img.icons8.com/ios-filled/50/artificial-intelligence.png" alt="Prediction">
+                </div>
+                <h4>Step 3: AI Prediction</h4>
+                <p>Our trained Support Vector Machine model analyzes the processed data and provides instant seizure likelihood assessment.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Model Performance</h2>
+        <div class="metrics">
+            <div class="metric">
+                <h3 data-target="97">0</h3>
+                <p>Accuracy</p>
+            </div>
+            <div class="metric">
+                <h3 data-target="94">0</h3>
+                <p>Precision</p>
+            </div>
+            <div class="metric">
+                <h3 data-target="93">0</h3>
+                <p>Recall</p>
+            </div>
+            <div class="metric">
+                <h3 data-target="95">0</h3>
+                <p>F1-Score</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="disclaimer">
+            <strong>⚠️ Medical Disclaimer:</strong> This tool is designed for research and educational purposes only. 
+            It should not be used as a substitute for professional medical diagnosis, treatment, or advice. 
+            Always consult with qualified healthcare professionals for medical concerns.
+        </div>
+    </section>
+
+    <footer>
+        <p>2025 Epileptic Seizure Detection Project | Developed by <strong>Vedant Kolhapure</strong></p>
+        <p style="margin-top: 10px; opacity: 0.8; font-size: 0.9rem;">
+            Advancing healthcare through artificial intelligence and machine learning
+        </p>
+    </footer>
+
+    <!-- Back to top button -->
+    <a href="#" class="back-to-top">↑</a>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 8 + 8) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Progress bar
+        function updateProgressBar() {
+            const progressBar = document.querySelector('.progress-bar');
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+        }
+
+        // Back to top button
+        function toggleBackToTop() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+
+        // Smooth scroll for back to top
+        document.querySelector('.back-to-top').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Counter animation for metrics
+        function animateCounters() {
+            const metrics = document.querySelectorAll('.metric h3');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseInt(entry.target.dataset.target);
+                        let current = 0;
+                        const increment = target / 50;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                entry.target.textContent = target + '%';
+                                clearInterval(timer);
+                            } else {
+                                entry.target.textContent = Math.floor(current) + '%';
+                            }
+                        }, 30);
+                        entry.target.parentElement.classList.add('animate');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            metrics.forEach(metric => {
+                observer.observe(metric);
+            });
+        }
+
+        // Intersection Observer for fade-in animations
+        function setupIntersectionObserver() {
+            const elements = document.querySelectorAll('section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            elements.forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Initialize everything
+        window.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            animateCounters();
+            setupIntersectionObserver();
+        });
+
+        // Scroll events
+        window.addEventListener('scroll', () => {
+            updateProgressBar();
+            toggleBackToTop();
+        });
+
+        // Add hover effects to steps
+        document.querySelectorAll('.step').forEach(step => {
+            step.addEventListener('mouseenter', () => {
+                step.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            step.addEventListener('mouseleave', () => {
+                step.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+
+</body>
+</html>

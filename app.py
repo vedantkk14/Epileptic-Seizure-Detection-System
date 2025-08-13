@@ -4,12 +4,19 @@ import pandas as pd
 
 app = Flask(__name__)
 
+# Load models
 scaler = joblib.load("model/scaler.pkl")
 pca = joblib.load("model/pca.pkl")
 svm_model = joblib.load("model/svm_model.pkl")
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+# Home Page (Landing)
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("home.html")
+
+# Prediction Page
+@app.route("/index.html", methods=["GET", "POST"])
+def predict():
     prediction_text = None
     if request.method == "POST":
         file = request.files.get("file")
